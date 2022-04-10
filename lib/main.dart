@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,9 +14,43 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var _questIdx = 0;
+  final _questions = [
+    {
+      'text': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'Yellow' , 'score': 10 },
+        {'text': 'Pink', 'score': 6 },
+        {'text': 'Red', 'score': 2 },
+        {'text': 'Green', 'score': 1 },
+      ],
+    },
+    {
+      'text': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'Cat' , 'score': 10 },
+        {'text': 'Dog', 'score': 6 },
+        {'text': 'Rat', 'score': 2 },
+        {'text': 'Fish', 'score': 1 },
+        {'text': 'Rabbit', 'score': 8 },
+        {'text': 'Lion', 'score': 4 },
+      ],
+    },
+    {
+      'text': 'Who\'s your favorite programer?',
+      'answers': [
+        {'text': 'misha' , 'score': 10 },
+        {'text': 'misha', 'score': 6 },
+        {'text': 'misha', 'score': 2 },
+      ],
+    },
+  ];
 
-  void _handleClickAnswer() {
+  var _questIdx = 0;
+  var _totalScore = 0;
+
+  void _handleClickAnswer(int score) {
+    _totalScore += score;
+
     setState(() {
       _questIdx += 1;
     });
@@ -27,35 +59,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      {
-        'text': 'What\'s your favorite color?',
-        'answers': ['Yellow', 'Pink', 'Red', 'Green'],
-      },
-      {
-        'text': 'What\'s your favorite animal?',
-        'answers': ['Cat', 'Dog', 'Rat', 'Fish', 'Rabbit', 'Lion'],
-      },
-      {
-        'text': 'Who\'s your favorite programer?',
-        'answers': ['misha', 'misha', 'misha'],
-      },
-    ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('hello'),
         ),
-        body: Column(
-          children: [
-            Question(
-              questions[_questIdx]['text'] as String,
-            ),
-            ...(questions[_questIdx]['answers'] as List<String>).map((answer) {
-              return Answer(answer, _handleClickAnswer);
-            }).toList()
-          ],
-        ),
+        body: _questIdx < _questions.length
+            ? Quiz(
+                handleClickAnswer: _handleClickAnswer,
+                questIdx: _questIdx,
+                questions: _questions,
+              )
+            : Result(_totalScore),
       ),
     );
   }
